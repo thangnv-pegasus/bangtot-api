@@ -11,10 +11,10 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('size_table', function (Blueprint $table) {
+        Schema::create('size_tables', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('idSize');
-            $table->foreignId('idProduct');
+            $table->foreignId('idSize')->default(1);
+            $table->foreignId('idProduct')->default(1);
             $table->timestamps();
         });
     }
@@ -24,6 +24,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('size_table');
+        Schema::dropIfExists('size_tables');
     }
 };
