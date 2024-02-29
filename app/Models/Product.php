@@ -16,7 +16,7 @@ class Product extends Model
         'idCollectionProduct',
         'idSize',
         'idImage',
-        'create_at',
-        'update_at'
+        'description',
+        'detail',
     ];
 }

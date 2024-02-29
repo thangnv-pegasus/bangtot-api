@@ -14,12 +14,13 @@ use Illuminate\Support\Facades\DB;
 
 class ProductController extends Controller
 {
-    public function showAll()
+    public function showAll(Request $request)
     {
         return response([
             'status' => 'ok',
             'message' => 'show all product',
-            'data' => Product::paginate(8)
+            'products' => Product::paginate(8),
+            'images' => DB::table('image_product')->get()
         ]);
     }
 
@@ -49,7 +50,7 @@ class ProductController extends Controller
             $product = Product::create([
                 'name' => $request->name,
                 'price' => $request->price,
-                'price_sale' => $request->price_sale,
+                'price_sale' => $request->price_sale || 0,
                 'description' => $request->description,
                 'detail' => $request->detail,
                 'idCollection' => $request->collectionId
@@ -72,7 +73,7 @@ class ProductController extends Controller
             return response([
                 'status' => '200',
                 'message' => 'create product successfully',
-                'product' => $sizes
+                'product' => $request->description
             ]);
         } catch (\Throwable $th) {
             return response([

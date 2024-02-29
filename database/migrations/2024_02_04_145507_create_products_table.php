@@ -16,8 +16,8 @@ return new class extends Migration {
             $table->float('price');
             $table->float('price_sale');
             $table->foreignId('idCollection')->default(1);
-            $table->timestamp('create_at')->useCurrent();
-            $table->timestamp('update_at')->useCurrent();
+            $table->longText('description')->default('description');
+            $table->longText('detail')->default('detail');
             $table->timestamps();
         });
     }

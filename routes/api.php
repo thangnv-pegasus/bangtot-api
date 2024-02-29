@@ -42,6 +42,6 @@ Route::prefix('/user')->middleware(['auth:sanctum'])->group(function () {
 
 Route::prefix('/admin')->middleware(['auth:sanctum'])->group(function () {
     Route::post('/create-product',[ProductController::class,'addProduct']);
-    
     Route::get('/add-product-data',[ProductController::class,'formData']);
+    Route::get('/all-user',[AuthController::class,'allUser']);
 });

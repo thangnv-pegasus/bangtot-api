@@ -116,4 +116,12 @@ class AuthController extends Controller
             'token' => null
         ]);
     }
+
+    public function allUser(Request $request){
+        return response([
+            'status' => 200,
+            'message' => 'get all user success',
+            'users' => User::all()
+        ]);
+    }
 }
