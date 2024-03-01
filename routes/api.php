@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AdminController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\BlogController;
 use App\Http\Controllers\CartController;
@@ -44,4 +45,5 @@ Route::prefix('/admin')->middleware(['auth:sanctum'])->group(function () {
     Route::post('/create-product',[ProductController::class,'addProduct']);
     Route::get('/add-product-data',[ProductController::class,'formData']);
     Route::get('/all-user',[AuthController::class,'allUser']);
+    Route::get('/dashboard',[AdminController::class, 'dashboard']);
 });
