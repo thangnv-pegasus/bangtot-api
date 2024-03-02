@@ -35,7 +35,7 @@ class AuthController extends Controller
             return response([
                 'code' => '200',
                 'token' => $token,
-                'user'=> $user,
+                'user' => $user,
                 'token_type' => 'Bearer',
                 'message' => 'Đăng nhập thành công'
             ]);
@@ -104,20 +104,17 @@ class AuthController extends Controller
         // return 'logout';
     }
 
-    public function user(Request $request){
-        if(auth()->user()){
-            return response([
-                'user' => auth()->user(),
-                'token' => $request->bearerToken()
-            ]);
-        }
+    public function user(Request $request)
+    {
         return response([
-            'user' => null,
-            'token' => null
+            'status' => 200,
+            'message' => 'get user in progress',
+            'user' => auth()->user(),
         ]);
     }
 
-    public function allUser(Request $request){
+    public function allUser(Request $request)
+    {
         return response([
             'status' => 200,
             'message' => 'get all user success',

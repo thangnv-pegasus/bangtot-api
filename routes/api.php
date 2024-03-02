@@ -5,6 +5,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\BlogController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\PhoneController;
 use App\Http\Controllers\ProductController;
 use Illuminate\Support\Facades\Route;
 
@@ -30,6 +31,7 @@ Route::get('/last-product',[ProductController::class,'lastProduct']);
 Route::get('/blogs', [BlogController::class, 'showAll']);
 Route::get('/product/{id}', [ProductController::class, 'getProduct']);
 Route::get('/user',[AuthController::class,'user'])->middleware('auth:sanctum');
+Route::get('/phone-contact',[PhoneController::class, 'getAll']);
 
 Route::post('/login', [AuthController::class, 'login'])->middleware('guest');
 Route::post('/register', [AuthController::class, 'register'])->middleware('guest');
@@ -46,4 +48,6 @@ Route::prefix('/admin')->middleware(['auth:sanctum'])->group(function () {
     Route::get('/add-product-data',[ProductController::class,'formData']);
     Route::get('/all-user',[AuthController::class,'allUser']);
     Route::get('/dashboard',[AdminController::class, 'dashboard']);
+    Route::post('/add-phone-contact',[AdminController::class, 'newPhone']);
+    Route::post('/new-post',[BlogController::class,'newPost']);
 });
