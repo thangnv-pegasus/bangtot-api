@@ -24,6 +24,7 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 
+Route::get('/header',[HomeController::class,'header']);
 Route::get('/home', [HomeController::class, 'index']);
 Route::get('/products', [ProductController::class, 'showAll']);
 Route::get('/show-collection', [ProductController::class, 'showCollection']);
@@ -36,6 +37,7 @@ Route::get('/phone-contact',[PhoneController::class, 'getAll']);
 Route::post('/login', [AuthController::class, 'login'])->middleware('guest');
 Route::post('/register', [AuthController::class, 'register'])->middleware('guest');
 Route::post('/logout', [AuthController::class, 'destroy'])->middleware('auth:sanctum');
+Route::get('/author/{id}',[BlogController::class,'getAuthor']);
 
 Route::prefix('/user')->middleware(['auth:sanctum'])->group(function () {
     Route::post('/add-to-cart?product={id}&quantity={q}', [CartController::class, 'addProduct']);

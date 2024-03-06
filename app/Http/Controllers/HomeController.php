@@ -27,4 +27,14 @@ class HomeController extends Controller
             'collectionItems' => CollectionItem::all(),
         ], 200);
     }
+
+    public function header()
+    {
+        return response([
+            'status' => 200,
+            'message' => 'get data header success',
+            'collections' => Collection::all(),
+            'collectionItems' => CollectionItem::all()
+        ]);
+    }
 }
