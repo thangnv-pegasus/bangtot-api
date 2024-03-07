@@ -33,6 +33,7 @@ Route::get('/blogs', [BlogController::class, 'showAll']);
 Route::get('/product/{id}', [ProductController::class, 'getProduct']);
 Route::get('/user',[AuthController::class,'user'])->middleware('auth:sanctum');
 Route::get('/phone-contact',[PhoneController::class, 'getAll']);
+Route::get('/image-product/{id}',[ProductController::class,'getImage']);
 
 Route::post('/login', [AuthController::class, 'login'])->middleware('guest');
 Route::post('/register', [AuthController::class, 'register'])->middleware('guest');
@@ -41,7 +42,7 @@ Route::get('/author/{id}',[BlogController::class,'getAuthor']);
 
 Route::prefix('/user')->middleware(['auth:sanctum'])->group(function () {
     Route::post('/add-to-cart?product={id}&quantity={q}', [CartController::class, 'addProduct']);
-    Route::get('/cart-user', [CartController::class, 'showAll']);
+    Route::get('/cart', [CartController::class, 'showAll']);
     Route::get('/home', [HomeController::class, 'index']);
 });
 

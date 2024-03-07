@@ -13,7 +13,7 @@ class BlogController extends Controller
         return response([
             'status' => 200,
             'message' => 'get all blog is success',
-            'blogs' => DB::table('blogs')->get()
+            'blogs' => DB::table('blogs')->paginate(6)
         ]);
     }
 

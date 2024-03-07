@@ -19,7 +19,8 @@ return new class extends Migration
             $table->longText('content');
             $table->string('imageUrl');
             $table->string('image_publicId');
-            $table->timestamps();
+            $table->timestamp('create_at')->useCurrent();
+            $table->timestamp('update_at')->useCurrent();
         });
     }
 

@@ -116,6 +116,14 @@ class ProductController extends Controller
         ]);
     }
 
+
+    public function getImage($id){
+        return response([
+            'status' => 200,
+            'message' => 'get image of product is successed',
+            'image' => DB::table('image_product')->where('idProduct','=',$id)
+        ]);
+    }
    
 
 }
