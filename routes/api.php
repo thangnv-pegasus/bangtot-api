@@ -34,11 +34,13 @@ Route::get('/product/{id}', [ProductController::class, 'getProduct']);
 Route::get('/user',[AuthController::class,'user'])->middleware('auth:sanctum');
 Route::get('/phone-contact',[PhoneController::class, 'getAll']);
 Route::get('/image-product/{id}',[ProductController::class,'getImage']);
+Route::get('/product-in-collection/{id}',[ProductController::class,'getByCollection']);
 
 Route::post('/login', [AuthController::class, 'login'])->middleware('guest');
 Route::post('/register', [AuthController::class, 'register'])->middleware('guest');
 Route::post('/logout', [AuthController::class, 'destroy'])->middleware('auth:sanctum');
 Route::get('/author/{id}',[BlogController::class,'getAuthor']);
+Route::get('/first-product-collection/{idCollection}',[ProductController::class,'firstProduct']);
 
 Route::prefix('/user')->middleware(['auth:sanctum'])->group(function () {
     Route::post('/add-to-cart?product={id}&quantity={q}', [CartController::class, 'addProduct']);

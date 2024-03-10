@@ -20,18 +20,38 @@ class ProductController extends Controller
             'status' => 'ok',
             'message' => 'show all product',
             'products' => Product::paginate(8),
-            'images' => DB::table('image_product')->get()
         ]);
     }
 
     public function getProduct($id)
     {
-        return 'this is product ' . $id;
+        $product = DB::table('products')->where('id', '=', $id)->get();
+        $image = DB::table('image_product')->where('idProduct', '=', $id)->get();
+        $sizes = DB::table('sizes')
+            ->leftJoin('size_tables', 'sizes.id', '=', 'size_tables.idSize')
+            ->where('idProduct', '=', $id)
+            ->select('sizes.name', 'size_tables.idSize','sizes.factor')
+            ->get();
+        return response([
+            'status' => 200,
+            'message' => 'get product is successed',
+            'product' => $product,
+            'images' => $image,
+            'sizes' => $sizes
+        ]);
     }
 
-    public function getByCollection($collection)
+    public function firstProduct($idCollection)
     {
-        return 'this is product of collection id ' . $collection;
+        return response([
+            'status' => 200,
+            'message' => 'get product in collection is successfully',
+            'product' => DB::table('products')
+                ->crossJoin('image_product')
+                ->where('products.idCollection', '=', $idCollection)
+                ->select('image_product.name as imageUrl', 'products.*')
+                ->first()
+        ]);
     }
 
     public function addProduct(Request $request)
@@ -117,13 +137,23 @@ class ProductController extends Controller
     }
 
 
-    public function getImage($id){
+    public function getImage($id)
+    {
         return response([
             'status' => 200,
             'message' => 'get image of product is successed',
-            'image' => DB::table('image_product')->where('idProduct','=',$id)
+            'image' => DB::table('image_product')->where('idProduct', '=', $id)->get()
         ]);
     }
-   
+
+    public function getByCollection($id)
+    {
+        return response([
+            'status' => 200,
+            'message' => 'get first product is successfully',
+            'products' => DB::table('products')->where('idCollection', '=', $id)->get()
+        ]);
+    }
+
 
 }

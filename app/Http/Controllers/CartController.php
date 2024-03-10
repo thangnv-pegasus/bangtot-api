@@ -20,6 +20,16 @@ class CartController extends Controller
 
     public function addProduct($id, $q)
     {
-        return 'this is product ' . $id . ' quantity = ' . $q;
+        $idUser = auth()->user()->id;
+        return response([
+            'status' => 200,
+            'message' => 'add product to cart is successfully',
+            'cart' => [
+                'idUser' => $idUser,
+                'quantity' => $q,
+                'productId' => $id
+            ]
+            ]);
     }
+
 }
