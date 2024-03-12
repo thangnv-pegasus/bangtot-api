@@ -43,7 +43,7 @@ Route::get('/author/{id}',[BlogController::class,'getAuthor']);
 Route::get('/first-product-collection/{idCollection}',[ProductController::class,'firstProduct']);
 
 Route::prefix('/user')->middleware(['auth:sanctum'])->group(function () {
-    Route::post('/add-to-cart?product={id}&quantity={q}', [CartController::class, 'addProduct']);
+    Route::post('/add-to-cart', [CartController::class, 'addProduct']);
     Route::get('/cart', [CartController::class, 'showAll']);
     Route::get('/home', [HomeController::class, 'index']);
 });

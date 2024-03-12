@@ -16,10 +16,12 @@ class ProductController extends Controller
 {
     public function showAll(Request $request)
     {
+        $page_size = $request->page || 8;
         return response([
             'status' => 'ok',
             'message' => 'show all product',
             'products' => Product::paginate(8),
+            'images' => DB::table('image_product')->get()
         ]);
     }
 
@@ -32,12 +34,14 @@ class ProductController extends Controller
             ->where('idProduct', '=', $id)
             ->select('sizes.name', 'size_tables.idSize','sizes.factor')
             ->get();
+        $relatedProduct = DB::table('products')->where('idCollection','=',$product[0]->idCollection)->limit(4)->get();
         return response([
             'status' => 200,
             'message' => 'get product is successed',
             'product' => $product,
             'images' => $image,
-            'sizes' => $sizes
+            'sizes' => $sizes,
+            'related' => $relatedProduct
         ]);
     }
 
@@ -60,12 +64,11 @@ class ProductController extends Controller
         try {
             $validate = $request->validate([
                 'name' => 'required',
-                'price' => 'required | numeric',
+                'price' => 'required',
                 'description' => 'required',
                 'detail' => 'required',
                 'collectionId' => 'required',
             ]);
-
 
             $product = Product::create([
                 'name' => $request->name,
@@ -86,20 +89,21 @@ class ProductController extends Controller
             }
             foreach ($sizes as $key => $size) {
                 DB::table('size_tables')->insert([
-                    'idProduct' => 1,
+                    'idProduct' => $product->id,
                     'idSize' => $size['id'],
                 ]);
             }
             return response([
                 'status' => '200',
                 'message' => 'create product successfully',
-                'product' => $request->description
+                'product' => $product
             ]);
         } catch (\Throwable $th) {
             return response([
                 'status' => '422',
                 'message' => 'create product failed',
-                'error' => $th
+                'error' => $th,
+                'req' => $request->all()
             ]);
         }
 
