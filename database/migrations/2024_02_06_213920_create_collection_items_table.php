@@ -13,10 +13,12 @@ return new class extends Migration
     {
         Schema::create('collection_items', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('idCollection');
+            $table->unsignedBigInteger('idCollection');
             $table->string('path');
             $table->string('title');
             $table->timestamps();
+
+            $table->foreign('idCollection')->references('id')->on('collections');
         });
     }
 

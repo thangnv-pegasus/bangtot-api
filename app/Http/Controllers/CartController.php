@@ -7,15 +7,26 @@ use Illuminate\Support\Facades\DB;
 
 class CartController extends Controller
 {
-    public function showAll()
+    public function showAll(Request $request)
     {
-        $idUser = auth()->user()->id;
-        $cartId = DB::table('cart')->where('idUser', '=', $idUser);
-        return response([
-            'status' => 200,
-            'message' => 'get cart of user is successed',
-            'cart' => DB::table('cart_product')->where('idCart', '=', $cartId)
-        ]);
+        try {
+            $idUser = auth()->user()->id;
+            $cartId = DB::table('cart')->where('idUser', '=', $idUser)->first()->id;
+            return response([
+                'status' => 200,
+                'message' => 'get cart of user is successed',
+                'cart' => DB::table('cart_product')
+                    ->where('idCart', '=', $cartId)
+                    ->join('products', 'cart_product.idProduct', '=', 'products.id')
+                    ->join('sizes', 'sizes.id', '=', 'cart_product.idSize')
+                    ->select('products.name', 'products.id', 'products.price', 'products.price_sale', 'cart_product.quantity', 'sizes.name as size_name', 'sizes.id as idSize', 'sizes.factor')
+                    ->get()
+            ]);
+        } catch (\Exception $e) {
+            return response([
+                'error' => $e
+            ]);
+        }
     }
 
     public function addProduct(Request $request)

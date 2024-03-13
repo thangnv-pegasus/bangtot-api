@@ -34,7 +34,7 @@ class ProductController extends Controller
             ->where('idProduct', '=', $id)
             ->select('sizes.name', 'size_tables.idSize','sizes.factor')
             ->get();
-        $relatedProduct = DB::table('products')->where('idCollection','=',$product[0]->idCollection)->limit(4)->get();
+        $relatedProduct = DB::table('products')->where('collection_id','=',$product[0]->collection_id)->limit(4)->get();
         return response([
             'status' => 200,
             'message' => 'get product is successed',
@@ -51,9 +51,9 @@ class ProductController extends Controller
             'status' => 200,
             'message' => 'get product in collection is successfully',
             'product' => DB::table('products')
-                ->crossJoin('image_product')
-                ->where('products.idCollection', '=', $idCollection)
+                ->join('image_product','image_product.idProduct','=','products.id')
                 ->select('image_product.name as imageUrl', 'products.*')
+                ->where('products.collection_id', '=', $idCollection)
                 ->first()
         ]);
     }
@@ -76,7 +76,7 @@ class ProductController extends Controller
                 'price_sale' => $request->price_sale || 0,
                 'description' => $request->description,
                 'detail' => $request->detail,
-                'idCollection' => $request->collectionId
+                'collection_id' => $request->collectionId
             ]);
             $images = $request->image;
             $sizes = $request->sizes;
@@ -88,7 +88,7 @@ class ProductController extends Controller
                 ]);
             }
             foreach ($sizes as $key => $size) {
-                DB::table('size_tables')->insert([
+                DB::table('size_product')->insert([
                     'idProduct' => $product->id,
                     'idSize' => $size['id'],
                 ]);
@@ -96,7 +96,8 @@ class ProductController extends Controller
             return response([
                 'status' => '200',
                 'message' => 'create product successfully',
-                'product' => $product
+                'product' => $product,
+                'collectionid' => $request->collectionId
             ]);
         } catch (\Throwable $th) {
             return response([
@@ -155,7 +156,7 @@ class ProductController extends Controller
         return response([
             'status' => 200,
             'message' => 'get first product is successfully',
-            'products' => DB::table('products')->where('idCollection', '=', $id)->get()
+            'products' => DB::table('products')->where('collection_id', '=', $id)->get()
         ]);
     }
 

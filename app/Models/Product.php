@@ -13,10 +13,12 @@ class Product extends Model
         'name',
         'price',
         'price_sale',
-        'idCollectionProduct',
+        'collection_id',
         'idSize',
         'idImage',
         'description',
         'detail',
+        'update_at',
+        'create_at'
     ];
 }
