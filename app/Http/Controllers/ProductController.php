@@ -30,9 +30,9 @@ class ProductController extends Controller
         $product = DB::table('products')->where('id', '=', $id)->get();
         $image = DB::table('image_product')->where('idProduct', '=', $id)->get();
         $sizes = DB::table('sizes')
-            ->leftJoin('size_tables', 'sizes.id', '=', 'size_tables.idSize')
+            ->leftJoin('size_product', 'sizes.id', '=', 'size_product.idSize')
             ->where('idProduct', '=', $id)
-            ->select('sizes.name', 'size_tables.idSize','sizes.factor')
+            ->select('sizes.name', 'size_product.idSize','sizes.factor')
             ->get();
         $relatedProduct = DB::table('products')->where('collection_id','=',$product[0]->collection_id)->limit(4)->get();
         return response([

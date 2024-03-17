@@ -44,6 +44,8 @@ Route::get('/first-product-collection/{idCollection}',[ProductController::class,
 
 Route::prefix('/user')->middleware(['auth:sanctum'])->group(function () {
     Route::post('/add-to-cart', [CartController::class, 'addProduct']);
+    Route::patch('/update-cart',[CartController::class,'update']);
+    Route::delete('/delete-product-cart/{id}',[CartController::class,'delete']);
     Route::get('/cart', [CartController::class, 'showAll']);
     Route::get('/home', [HomeController::class, 'index']);
 });
