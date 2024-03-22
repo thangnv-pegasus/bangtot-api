@@ -20,9 +20,9 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
-});
+// Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
+//     return $request->user();
+// });
 
 Route::get('/header',[HomeController::class,'header']);
 Route::get('/home', [HomeController::class, 'index']);
@@ -46,8 +46,10 @@ Route::prefix('/user')->middleware(['auth:sanctum'])->group(function () {
     Route::post('/add-to-cart', [CartController::class, 'addProduct']);
     Route::patch('/update-cart',[CartController::class,'update']);
     Route::delete('/delete-product-cart/{id}',[CartController::class,'delete']);
+    Route::post('/order',[CartController::class,'order']);
     Route::get('/cart', [CartController::class, 'showAll']);
     Route::get('/home', [HomeController::class, 'index']);
+    Route::get('/order-infor',[CartController::class,'orderInfor']);
 });
 
 Route::prefix('/admin')->middleware(['auth:sanctum'])->group(function () {
@@ -57,4 +59,6 @@ Route::prefix('/admin')->middleware(['auth:sanctum'])->group(function () {
     Route::get('/dashboard',[AdminController::class, 'dashboard']);
     Route::post('/add-phone-contact',[AdminController::class, 'newPhone']);
     Route::post('/new-post',[BlogController::class,'newPost']);
+    Route::get('/bill-user',[CartController::class,'billUser']);
+    Route::patch('/update-status',[CartController::class,'updateStatus']);
 });

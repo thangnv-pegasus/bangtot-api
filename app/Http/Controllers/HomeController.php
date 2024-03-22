@@ -12,15 +12,6 @@ class HomeController extends Controller
 {
     public function index(Request $request)
     {
-        $user = auth('sanctum')->user();
-        if ($user) {
-            return response()->json([
-                'code' => '200',
-                'collections' => Collection::all(),
-                'collectionItems' => CollectionItem::all(),
-                'user' => $user
-            ], 200);
-        }
         return response()->json([
             'code' => '200',
             'collections' => Collection::all(),
@@ -34,7 +25,7 @@ class HomeController extends Controller
             'status' => 200,
             'message' => 'get data header success',
             'collections' => Collection::all(),
-            'collectionItems' => CollectionItem::all()
+            'collectionItems' => CollectionItem::all(),
         ]);
     }
 }

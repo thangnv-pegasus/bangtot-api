@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use DateTime;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -151,4 +152,122 @@ class CartController extends Controller
         }
     }
 
+
+    public function order(Request $request)
+    {
+
+        $user_id = auth()->user()->id;
+
+        try {
+
+            $order_id = DB::table('order')->insertGetId([
+                'idUser' => $user_id,
+                'name' => $request->username,
+                'address' => $request->address,
+                'phone' => $request->phone,
+                'email' => $request->email,
+                'note' => $request->note
+            ]);
+
+            $cart_id = DB::table('cart')->where('idUser', '=', $user_id)->first()->id;
+            $cart_product = DB::table('cart_product')->where('idCart', '=', $cart_id)->get();
+
+            foreach ($cart_product as $key => $prod) {
+                $order_product = DB::table('order_product')->insert([
+                    'idOrder' => $order_id,
+                    'idProduct' => $prod->idProduct,
+                    'quantity' => $prod->quantity,
+                    'idSize' => $prod->idSize
+                ]);
+            }
+
+            // $delete = DB::table('cart_product')
+            // ->where('id', '=', $cart_id)
+            // ->delete();
+
+            return response([
+                'status' => 200,
+                'message' => 'post order infor successed',
+                'req' => $order_id,
+                'cart' => $cart_product
+            ]);
+        } catch (Exception $e) {
+            return response([
+                'status' => 201,
+                'message' => 'post order infor failed',
+                'error' => $e,
+                'req' => $request->all()
+            ]);
+        }
+
+    }
+
+    public function orderInfor(Request $request)
+    {
+        $user_id = auth()->user()->id;
+
+        try {
+            $order_infor = DB::table('order')->where('idUser', '=', $user_id)->latest()->first();
+            $products = DB::table('order_product')
+                ->where('idOrder', '=', $order_infor->id)
+                ->join('products', 'order_product.idProduct', '=', 'products.id')
+                ->join('sizes', 'sizes.id', '=', 'order_product.idSize')
+                ->select('products.id', 'order_product.quantity', 'sizes.name as size_name', 'order_product.idOrder', 'products.name', 'products.price', 'products.price_sale')
+                ->get();
+
+            return response([
+                'status' => 200,
+                'message' => 'get order infor successed',
+                'order_infor' => $order_infor,
+                'products' => $products
+            ]);
+        } catch (Exception $e) {
+            return response([
+                'status' => 200,
+                'message' => 'get order infor successed',
+                'error' => $e
+            ]);
+        }
+    }
+
+    public function billUser(Request $request)
+    {
+        $order = DB::table('order')
+            ->join('users', 'users.id', '=', 'order.idUser')
+            ->select('users.name as username', 'order.*')
+            ->get();
+
+        $products = DB::table('order_product')
+            ->join('products', 'order_product.idProduct', '=', 'products.id')
+            ->join('sizes', 'sizes.id', '=', 'order_product.idSize')
+            ->select('products.id', 'order_product.quantity', 'sizes.name as size_name', 'order_product.idOrder', 'products.name', 'products.price', 'products.price_sale')
+            ->get();
+
+        return response([
+            'status' => 200,
+            'message' => 'get data order of user is successed',
+            'orders' => $order,
+            'products' => $products
+        ]);
+
+    }
+
+    public function updateStatus(Request $request)
+    {
+        $dt = new DateTime();
+        $update = DB::table('order')->where('id', '=', $request->order_id)->update([
+            'status' => $request->status,
+            'updated_at' => $dt->format('Y-m-d H:i:s')
+        ]);
+        return response([
+            'status' => 200,
+            'message' => 'update status is successed',
+            'request' => $request->all(),
+            'update' => $update,
+            'order' => DB::table('order')
+                ->join('users', 'users.id', '=', 'order.idUser')
+                ->select('users.name as username', 'order.*')
+                ->get()
+        ]);
+    }
 }
