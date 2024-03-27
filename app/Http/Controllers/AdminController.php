@@ -13,10 +13,9 @@ class AdminController extends Controller
         return response([
             'status' => 200,
             'message' => 'get data dashboard',
-            'products' => DB::table('products')->limit(6)->get(),
-            'images' => DB::table('image_product')->get(),
-            'blogs' => DB::table('blogs')->limit(3)->get(),
-            'phone' => DB::table('phone')->get()
+            'phone' => DB::table('phone')->get(),
+            'banner' => DB::table('banner')->get(),
+            'collections' => DB::table('collections')->get()
         ]);
     }
 

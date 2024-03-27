@@ -32,9 +32,9 @@ class ProductController extends Controller
         $sizes = DB::table('sizes')
             ->leftJoin('size_product', 'sizes.id', '=', 'size_product.idSize')
             ->where('idProduct', '=', $id)
-            ->select('sizes.name', 'size_product.idSize','sizes.factor')
+            ->select('sizes.name', 'size_product.idSize', 'sizes.factor')
             ->get();
-        $relatedProduct = DB::table('products')->where('collection_id','=',$product[0]->collection_id)->limit(4)->get();
+        $relatedProduct = DB::table('products')->where('collection_id', '=', $product[0]->collection_id)->limit(4)->get();
         return response([
             'status' => 200,
             'message' => 'get product is successed',
@@ -51,7 +51,7 @@ class ProductController extends Controller
             'status' => 200,
             'message' => 'get product in collection is successfully',
             'product' => DB::table('products')
-                ->join('image_product','image_product.idProduct','=','products.id')
+                ->join('image_product', 'image_product.idProduct', '=', 'products.id')
                 ->select('image_product.name as imageUrl', 'products.*')
                 ->where('products.collection_id', '=', $idCollection)
                 ->first()
@@ -160,5 +160,29 @@ class ProductController extends Controller
         ]);
     }
 
+    public function delete(Request $request)
+    {
+        $id = $request->id;
+        try {
+            $delte_cart_product = DB::table('cart_product')->where('idProduct', '=', $id)->delete();
+            $delte_image_product = DB::table('image_product')->where('idProduct', '=', $id)->delete();
+            $delte_order_product = DB::table('order_product')->where('idProduct', '=', $id)->delete();
+            $delte_size_product = DB::table('size_product')->where('idProduct', '=', $id)->delete();
+            // $delete_size_product = DB::table('size_product')->where('idProduct', '=', $id)->delete();
+            $result = DB::table('products')->where('id', '=', $id)->delete();
 
+            return response([
+                'status' => 200,
+                'message' => 'delete product is successed',
+                'products' => Product::paginate(8),
+                'images' => DB::table('image_product')->get()
+            ]);
+        } catch (\Exception $th) {
+            return response([
+                'status' => 201,
+                'message' => 'delete product failed',
+                'result' => $th
+            ]);
+        }
+    }
 }

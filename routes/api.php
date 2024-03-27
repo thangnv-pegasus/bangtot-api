@@ -2,8 +2,10 @@
 
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\BannerController;
 use App\Http\Controllers\BlogController;
 use App\Http\Controllers\CartController;
+use App\Http\Controllers\CollectionController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\PhoneController;
 use App\Http\Controllers\ProductController;
@@ -61,4 +63,12 @@ Route::prefix('/admin')->middleware(['auth:sanctum'])->group(function () {
     Route::post('/new-post',[BlogController::class,'newPost']);
     Route::get('/bill-user',[CartController::class,'billUser']);
     Route::patch('/update-status',[CartController::class,'updateStatus']);
+    Route::delete('/delete-product/{id}',[ProductController::class,'delete']);
+    Route::patch('/update-phone/{id}',[PhoneController::class,'update']);
+    Route::delete('/delete-phone/{id}',[PhoneController::class,'delete']);
+    Route::get('/banner',[BannerController::class,'store']);
+    Route::post('/create-banner',[BannerController::class,'create']);
+    Route::delete('/delete-banner/{id}',[BannerController::class,'delete']);
+    Route::post('/create-collection',[CollectionController::class,'create']);
+    Route::delete('/delete-collection/{id}',[CollectionController::class,'delete']);
 });
