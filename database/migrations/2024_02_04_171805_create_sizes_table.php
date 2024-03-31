@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('sizes', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->integer('factor')->default(1);
+            $table->double('factor')->default(1);
             $table->timestamps();
         });
     }

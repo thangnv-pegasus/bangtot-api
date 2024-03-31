@@ -37,13 +37,14 @@ Route::get('/user',[AuthController::class,'user'])->middleware('auth:sanctum');
 Route::get('/phone-contact',[PhoneController::class, 'getAll']);
 Route::get('/image-product/{id}',[ProductController::class,'getImage']);
 Route::get('/product-in-collection/{id}',[ProductController::class,'getByCollection']);
+Route::get('/search/{value}',[HomeController::class,'search']);
 
 Route::post('/login', [AuthController::class, 'login'])->middleware('guest');
 Route::post('/register', [AuthController::class, 'register'])->middleware('guest');
-Route::post('/logout', [AuthController::class, 'destroy'])->middleware('auth:sanctum');
+Route::POST('/user/logout', [AuthController::class, 'destroy'])->middleware('auth:sanctum');
 Route::get('/author/{id}',[BlogController::class,'getAuthor']);
 Route::get('/first-product-collection/{idCollection}',[ProductController::class,'firstProduct']);
-
+Route::get('/banner',[BannerController::class,'store']);
 Route::prefix('/user')->middleware(['auth:sanctum'])->group(function () {
     Route::post('/add-to-cart', [CartController::class, 'addProduct']);
     Route::patch('/update-cart',[CartController::class,'update']);
@@ -52,6 +53,8 @@ Route::prefix('/user')->middleware(['auth:sanctum'])->group(function () {
     Route::get('/cart', [CartController::class, 'showAll']);
     Route::get('/home', [HomeController::class, 'index']);
     Route::get('/order-infor',[CartController::class,'orderInfor']);
+    Route::get('/profile',[AuthController::class,'profile']);
+    Route::patch('/change-password',[AuthController::class,'changePassword']);
 });
 
 Route::prefix('/admin')->middleware(['auth:sanctum'])->group(function () {
@@ -66,9 +69,12 @@ Route::prefix('/admin')->middleware(['auth:sanctum'])->group(function () {
     Route::delete('/delete-product/{id}',[ProductController::class,'delete']);
     Route::patch('/update-phone/{id}',[PhoneController::class,'update']);
     Route::delete('/delete-phone/{id}',[PhoneController::class,'delete']);
-    Route::get('/banner',[BannerController::class,'store']);
+    
     Route::post('/create-banner',[BannerController::class,'create']);
     Route::delete('/delete-banner/{id}',[BannerController::class,'delete']);
     Route::post('/create-collection',[CollectionController::class,'create']);
     Route::delete('/delete-collection/{id}',[CollectionController::class,'delete']);
+
+    Route::post('/add-size',[ProductController::class,'addsize']);
+    Route::delete('/delete-size/{id}',[ProductController::class,'deletesize']);
 });

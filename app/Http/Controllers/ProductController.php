@@ -7,6 +7,7 @@ use App\Models\ImageProduct;
 use App\Models\Product;
 use App\Models\Size;
 use App\Models\SizeTable;
+use Exception;
 use Illuminate\Auth\Authenticatable;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -184,5 +185,46 @@ class ProductController extends Controller
                 'result' => $th
             ]);
         }
+    }
+
+    public function addsize(Request $request)
+    {
+        try {
+            DB::table('sizes')->insert([
+                'name' => $request->name,
+                'factor' => $request->factor
+            ]);
+            return response([
+                'status' => 200,
+                'message' => 'add size is successed',
+                'data' => $request->all(),
+                'sizes' => DB::table('sizes')->get()
+            ]);
+        } catch (Exception $e) {
+            return response([
+                'status' => 200,
+                'message' => 'add size is failed',
+                'error' => $e
+            ]);
+        }
+    }
+
+    public function deletesize(Request $request,$id)
+    {
+        try{
+            DB::table('sizes')->where('id','=',$id)->delete();
+            return response([
+                'status' => 200,
+                'message' => 'delete size is sucessed',
+                'sizes' => DB::table('sizes')->get()
+            ]);
+        }catch(Exception $e){
+            return response([
+                'status' => 201,
+                'message' => 'delete size is failed',
+                'error' => $e
+            ]);
+        }
+        
     }
 }

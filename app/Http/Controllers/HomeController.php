@@ -6,6 +6,7 @@ use App\Models\Collection;
 use App\Models\CollectionItem;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Laravel\Sanctum\PersonalAccessToken;
 
 class HomeController extends Controller
@@ -25,7 +26,15 @@ class HomeController extends Controller
             'status' => 200,
             'message' => 'get data header success',
             'collections' => Collection::all(),
-            'collectionItems' => CollectionItem::all(),
+        ]);
+    }
+
+    public function search($value){
+        $products = DB::table('products')->where('name','like','%'.$value.'%')->get();
+        return response([
+            'status' => 200,
+            'message' => 'search products is successed',
+            'products' => $products
         ]);
     }
 }

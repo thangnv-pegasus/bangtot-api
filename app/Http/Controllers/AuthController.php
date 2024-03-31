@@ -8,6 +8,7 @@ use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 
 class AuthController extends Controller
@@ -80,14 +81,14 @@ class AuthController extends Controller
                 $token = $user->createToken('userToken')->plainTextToken;
 
                 return response([
-                    'code' => 200,
+                    'status' => 200,
                     'message' => 'Đăng kí tài khoản thành công!',
                     'data' => $token
                 ]);
             }
         } catch (Exception $e) {
             return response([
-                'code' => '400',
+                'status' => '400',
                 'message' => 'Đăng kí tài khoản không thành công!',
                 'data' => $e
             ]);
@@ -101,7 +102,6 @@ class AuthController extends Controller
             'code' => 200,
             'message' => 'Đăng xuất thành công!',
         ]);
-        // return 'logout';
     }
 
     public function user(Request $request)
@@ -120,5 +120,45 @@ class AuthController extends Controller
             'message' => 'get all user success',
             'users' => User::all()
         ]);
+    }
+
+    public function profile(Request $request)
+    {
+        return response([
+            'status' => 200,
+            'message' => 'get profile user is successed',
+            'infor' => DB::table('users')
+                ->where('id', '=', auth()->user()->id)
+                ->select('name', 'phone', 'email', 'address')
+                ->first(),
+            'order' => DB::table('order')->where('idUser', '=', auth()->user()->id)->get()
+        ]);
+    }
+
+    public function changePassword(Request $request)
+    {
+        $current_pass = $request->current_pass;
+        $new_pass = $request->new_pass;
+        $confirm_pass = $request->confirm_pass;
+        if (!Hash::check($current_pass, auth()->user()->password)) {
+            return response([
+                'status' => 202,
+                'message' => 'password is not correct'
+            ]);
+        } else if ($new_pass != $confirm_pass) {
+            return response([
+                'status' => 201,
+                'message' => 'password not match'
+            ]);
+        } else {
+            DB::table('users')->where('id', '=', auth()->user()->id)->update([
+                'password' => Hash::make($new_pass)
+            ]);
+            return response([
+                'status' => 200,
+                'message' => 'change password is successed',
+            ]);
+        }
+
     }
 }
