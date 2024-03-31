@@ -192,7 +192,7 @@ class ProductController extends Controller
         try {
             DB::table('sizes')->insert([
                 'name' => $request->name,
-                'factor' => $request->factor
+                'factor' => $request->factor || 0
             ]);
             return response([
                 'status' => 200,

@@ -196,9 +196,9 @@ class CartController extends Controller
                 ]);
             }
 
-            $delete = DB::table('cart_product')
-            ->where('id', '=', $cart_id)
-            ->delete();
+            // $delete = DB::table('cart_product')
+            // ->where('id', '=', $cart_id)
+            // ->delete();
 
             return response([
                 'status' => 200,
