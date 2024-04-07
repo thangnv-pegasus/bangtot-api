@@ -45,6 +45,7 @@ Route::POST('/user/logout', [AuthController::class, 'destroy'])->middleware('aut
 Route::get('/author/{id}',[BlogController::class,'getAuthor']);
 Route::get('/first-product-collection/{idCollection}',[ProductController::class,'firstProduct']);
 Route::get('/banner',[BannerController::class,'store']);
+
 Route::prefix('/user')->middleware(['auth:sanctum'])->group(function () {
     Route::post('/add-to-cart', [CartController::class, 'addProduct']);
     Route::patch('/update-cart',[CartController::class,'update']);
@@ -54,6 +55,7 @@ Route::prefix('/user')->middleware(['auth:sanctum'])->group(function () {
     Route::get('/home', [HomeController::class, 'index']);
     Route::get('/order-infor',[CartController::class,'orderInfor']);
     Route::get('/profile',[AuthController::class,'profile']);
+    Route::post('/buy-now',[CartController::class,'buynow']);
     Route::patch('/change-password',[AuthController::class,'changePassword']);
 });
 
