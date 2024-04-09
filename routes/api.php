@@ -62,6 +62,8 @@ Route::prefix('/user')->middleware(['auth:sanctum'])->group(function () {
 Route::prefix('/admin')->middleware(['auth:sanctum'])->group(function () {
     Route::post('/create-product',[ProductController::class,'addProduct']);
     Route::get('/add-product-data',[ProductController::class,'formData']);
+    Route::patch('/update-product/{id}',[ProductController::class,'update']);
+    Route::get('/update-data/{id}',[ProductController::class,'updateData']);
     Route::get('/all-user',[AuthController::class,'allUser']);
     Route::get('/dashboard',[AdminController::class, 'dashboard']);
     Route::post('/add-phone-contact',[AdminController::class, 'newPhone']);

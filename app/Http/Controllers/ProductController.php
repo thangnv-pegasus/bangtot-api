@@ -209,22 +209,87 @@ class ProductController extends Controller
         }
     }
 
-    public function deletesize(Request $request,$id)
+    public function deletesize(Request $request, $id)
     {
-        try{
-            DB::table('sizes')->where('id','=',$id)->delete();
+        try {
+            DB::table('sizes')->where('id', '=', $id)->delete();
             return response([
                 'status' => 200,
                 'message' => 'delete size is sucessed',
                 'sizes' => DB::table('sizes')->get()
             ]);
-        }catch(Exception $e){
+        } catch (Exception $e) {
             return response([
                 'status' => 201,
                 'message' => 'delete size is failed',
                 'error' => $e
             ]);
         }
-        
+
+    }
+
+    public function update(Request $request, $id)
+    {
+        try {
+            // DB::table('products')->where('id', '=', $id)->update([
+
+            // ]);
+            DB::table('products')->where('id', '=', $id)->update([
+                'name' => $request->name,
+                'price' => $request->price,
+                'price_sale' => $request->price_sale || 0,
+                'description' => $request->description,
+                'detail' => $request->detail,
+                'collection_id' => $request->collectionId
+            ]);
+            $images = $request->image;
+            $sizes = $request->sizes;
+            foreach ($images as $key => $image) {
+                DB::table('image_product')->insert([
+                    'idProduct' => $id,
+                    'name' => $image['url'],
+                    'description' => $image['publicId']
+                ]);
+            }
+            foreach ($sizes as $key => $size) {
+                DB::table('size_product')->insert([
+                    'idProduct' => $id,
+                    'idSize' => $size['id'],
+                ]);
+            }
+            return response([
+                'status' => 200,
+                'message' => 'update product is successed',
+                'products' => Product::paginate(8)
+            ]);
+        } catch (Exception $e) {
+            return response([
+                'status' => 400,
+                'message' => $e
+            ]);
+        }
+    }
+
+    public function updateData(Request $request, $id)
+    {
+        try {
+            return response([
+                'status' => 200,
+                'message' => 'get data is successed',
+                'product' => DB::table('products')->where('id', '=', $id)->first(),
+                'sizes' => DB::table('sizes')->get(),
+                'collections' => DB::table('collections')->get(),
+                'size_product' => DB::table('size_product')
+                    ->where('idProduct', '=', $id)
+                    ->join('sizes', 'size_product.idSize', '=', 'sizes.id')
+                    ->select('sizes.id','sizes.name')
+                    ->get()
+            ]);
+        } catch (Exception $e) {
+            return response([
+                'status' => 400,
+                'message' => $e
+            ]);
+        }
     }
 }
