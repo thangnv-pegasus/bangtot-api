@@ -230,16 +230,14 @@ class ProductController extends Controller
 
     public function update(Request $request, $id)
     {
+        $prod = DB::table('products')->where('id','=',$id)->first();
         try {
-            // DB::table('products')->where('id', '=', $id)->update([
-
-            // ]);
             DB::table('products')->where('id', '=', $id)->update([
                 'name' => $request->name,
                 'price' => $request->price,
                 'price_sale' => $request->price_sale || 0,
-                'description' => $request->description,
-                'detail' => $request->detail,
+                'description' => $request->description || $prod->description,
+                'detail' => $request->detail|| $prod->detail,
                 'collection_id' => $request->collectionId
             ]);
             $images = $request->image;
