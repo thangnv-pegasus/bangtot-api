@@ -45,6 +45,10 @@ Route::POST('/user/logout', [AuthController::class, 'destroy'])->middleware('aut
 Route::get('/author/{id}',[BlogController::class,'getAuthor']);
 Route::get('/first-product-collection/{idCollection}',[ProductController::class,'firstProduct']);
 Route::get('/banner',[BannerController::class,'store']);
+Route::post('/guest/cart',[CartController::class,'guestCart']);
+Route::post('/guest/order',[CartController::class,'orderGuest']);
+Route::post('/guest/buy-now',[CartController::class,'guestBuynow']);
+Route::post('/guest/order-infor',[CartController::class,'orderInforGuest']);
 
 Route::prefix('/user')->middleware(['auth:sanctum'])->group(function () {
     Route::post('/add-to-cart', [CartController::class, 'addProduct']);

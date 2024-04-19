@@ -20,6 +20,7 @@ return new class extends Migration
             $table->timestamps();
 
             $table->foreign('idOrder')->references('id')->on('order');
+            // $table->foreign('idOrder')->references('id')->on('order_guest');
             $table->foreign('idProduct')->references('id')->on('products');
             $table->foreign('idSize')->references('id')->on('sizes');
         });

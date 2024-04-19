@@ -69,7 +69,6 @@ class CartController extends Controller
                 'idProduct' => $request->productId,
                 'quantity' => $request->quantity,
                 'idSize' => $request->sizeId,
-                // 'idUser' => $idUser
             ]);
         }
         return response([
@@ -172,10 +171,24 @@ class CartController extends Controller
     {
 
         $user_id = auth()->user()->id;
-
+        $id_add = 1;
+        $latest_id = DB::table('order')->latest()->first();
+        $latest_order_guest = DB::table('order_guest')->latest()->first();
+        if ($latest_id == null) {
+            if ($latest_order_guest != null) {
+                $id_add = $latest_order_guest->id + 1;
+            }
+        } else {
+            if ($latest_id->id > $latest_order_guest->id) {
+                $id_add = $latest_id->id + 1;
+            } else {
+                $id_add = $latest_order_guest->id + 1;
+            }
+        }
         try {
 
             $order_id = DB::table('order')->insertGetId([
+                'id' => $id_add,
                 'idUser' => $user_id,
                 'name' => $request->username,
                 'address' => $request->address,
@@ -196,15 +209,18 @@ class CartController extends Controller
                 ]);
             }
 
-            // $delete = DB::table('cart_product')
-            // ->where('id', '=', $cart_id)
-            // ->delete();
+            $delete = DB::table('cart_product')
+                ->where('idCart', '=', $cart_id)
+                ->delete();
 
             return response([
                 'status' => 200,
                 'message' => 'post order infor successed',
                 'req' => $order_id,
-                'cart' => $cart_product
+                'cart' => $cart_product,
+                'cart-id' => $cart_id,
+                'latest_order' => $latest_id,
+                'latest-order-guest' => $latest_order_guest
             ]);
         } catch (Exception $e) {
             return response([
@@ -254,6 +270,7 @@ class CartController extends Controller
             ->select('users.name as username', 'order.*')
             ->get();
 
+        $order_guest = DB::table('order_guest')->get();
         $products = DB::table('order_product')
             ->join('products', 'order_product.idProduct', '=', 'products.id')
             ->join('sizes', 'sizes.id', '=', 'order_product.idSize')
@@ -264,6 +281,7 @@ class CartController extends Controller
             'status' => 200,
             'message' => 'get data order of user is successed',
             'orders' => $order,
+            'order_guest' => $order_guest,
             'products' => $products
         ]);
 
@@ -318,6 +336,169 @@ class CartController extends Controller
             return response([
                 'status' => 201,
                 'message' => $e
+            ]);
+        }
+    }
+
+    public function guestCart(Request $request)
+    {
+
+        $arr = [];
+        for ($i = 0; $i < count($request->cart); $i++) {
+            $item = $request->cart[$i];
+            $product = DB::table('products')
+                ->where('products.id', '=', $item['productId'])
+                ->first();
+            $size = $item['size'];
+            $product->factor = (int) $size['factor'];
+            $product->quantity = (int) $item['quantity'];
+            $product->size_name = $size['name'];
+            $product->size_id = (int) $size['idSize'];
+            $arr[] = $product;
+        }
+
+        return response([
+            'status' => 200,
+            'req' => $request->cart,
+            'cart' => $arr
+            // 'size_product' => DB::table('size_product')->get()
+        ]);
+    }
+
+    public function orderGuest(Request $request)
+    {
+
+        $id_add = 1;
+        $latest_id = DB::table('order')->latest()->first();
+        $latest_order_guest = DB::table('order_guest')->latest()->first();
+        if ($latest_id == null) {
+            if ($latest_order_guest != null) {
+                $id_add = $latest_order_guest->id + 1;
+            }
+        } else {
+            if ($latest_id->id > $latest_order_guest->id || $latest_id->id > $latest_order_guest) {
+                $id_add = $latest_id->id + 1;
+            } else {
+                $id_add = $latest_order_guest->id + 1;
+            }
+        }
+        try {
+            $cart = $request->cart;
+            $order_id = DB::table('order_guest')->insertGetId([
+                'id' => $id_add,
+                'name' => $request->username,
+                'address' => $request->address,
+                'phone' => $request->phone,
+                'email' => $request->email,
+                'note' => $request->note || ""
+            ]);
+
+            foreach ($cart as $key => $item) {
+                DB::table('order_product')->insert([
+                    'idOrder' => $order_id,
+                    'idProduct' => (int) $item['id'],
+                    'quantity' => (int) $item['quantity'],
+                    'idSize' => (int) $item['size_id']
+                ]);
+            }
+
+            return response([
+                'status' => 200,
+                'message' => 'post order infor successed',
+                'order_id' => $order_id,
+                'latest' => $latest_id
+            ]);
+        } catch (Exception $e) {
+            $cart0 = $cart[0];
+            return response([
+                'status' => 201,
+                'message' => 'post order infor failed',
+                'error' => $e,
+                'latest' => $latest_id
+            ]);
+        }
+
+    }
+
+    public function orderInforGuest(Request $request)
+    {
+        try {
+            $order_id = $request->order_id;
+            $products = DB::table('order_product')
+                ->where('idOrder', '=', $order_id)
+                ->join('products', 'order_product.idProduct', '=', 'products.id')
+                ->join('sizes', 'sizes.id', '=', 'order_product.idSize')
+                ->select('products.id', 'sizes.factor as factor', 'order_product.quantity', 'sizes.name as size_name', 'order_product.idOrder', 'products.name', 'products.price', 'products.price_sale')
+                ->get();
+
+            return response([
+                'status' => 200,
+                'message' => 'get order infor successed',
+                'order_infor' => DB::table('order_guest')->where('id', '=', $order_id)->first(),
+                'products' => $products
+            ]);
+        } catch (Exception $e) {
+            return response([
+                'status' => 200,
+                'message' => 'get order infor successed',
+                'error' => $e
+            ]);
+        }
+    }
+
+    public function guestBuynow(Request $request)
+    {
+        $id_add = 1;
+        $latest_id = DB::table('order')->latest()->first();
+        $latest_order_guest = DB::table('order_guest')->latest()->first();
+        if ($latest_id == null) {
+            if ($latest_order_guest != null) {
+                $id_add = $latest_order_guest->id + 1;
+            }
+        } else {
+            if ($latest_id->id > $latest_order_guest || $latest_id->id > $latest_order_guest->id) {
+                $id_add = $latest_id->id + 1;
+            } else {
+                $id_add = $latest_order_guest->id + 1;
+            }
+        }
+        try {
+            $order_id = DB::table('order_guest')->insertGetId([
+                'id' => $id_add,
+                'name' => $request->username,
+                'address' => $request->address,
+                'phone' => $request->phone,
+                'email' => $request->email,
+                'note' => $request->note || "khong co"
+            ]);
+
+            DB::table('order_product')->insert([
+                'idOrder' => $order_id,
+                'idProduct' => $request->productId,
+                'quantity' => $request->quantity,
+                'idSize' => $request->idSize
+            ]);
+            $products = DB::table('order_product')
+                ->where('idOrder', '=', $order_id)
+                ->join('products', 'order_product.idProduct', '=', 'products.id')
+                ->join('sizes', 'sizes.id', '=', 'order_product.idSize')
+                ->select('products.id', 'sizes.factor as factor', 'order_product.quantity', 'sizes.name as size_name', 'order_product.idOrder', 'products.name', 'products.price', 'products.price_sale')
+                ->get();
+
+            return response([
+                'status' => 200,
+                'message' => 'post order infor successed',
+                'order_infor' => DB::table('order_guest')->where('id', '=', $order_id)->first(),
+                'products' => $products,
+                'latest_id' => $latest_id,
+                'order_id' => $order_id
+            ]);
+        } catch (Exception $e) {
+            return response([
+                'status' => 201,
+                'message' => $e,
+                'request' => $request->all(),
+                'latest_id' => $latest_id
             ]);
         }
     }
